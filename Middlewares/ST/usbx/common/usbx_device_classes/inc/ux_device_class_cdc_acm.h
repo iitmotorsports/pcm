@@ -69,6 +69,7 @@
 
 #ifndef UX_DEVICE_CLASS_CDC_ACM_H
 #define UX_DEVICE_CLASS_CDC_ACM_H
+#include "ux_api.h"
 
 /* Determine if a C++ compiler is being used.  If so, ensure that standard 
    C is used to process the API information.  */ 
