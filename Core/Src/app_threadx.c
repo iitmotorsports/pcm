@@ -21,11 +21,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "app_threadx.h"
 
-#include "pcm.h"
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "pcm.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

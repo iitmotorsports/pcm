@@ -20,11 +20,9 @@
 #include "app_threadx.h"
 #include "main.h"
 
-#include "pcm.h"
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "pcm.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -65,7 +63,6 @@ static void MX_FDCAN1_Init(void);
 static void MX_FDCAN2_Init(void);
 static void MX_ICACHE_Init(void);
 static void MX_TIM2_Init(void);
-static void MX_USB_PCD_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -418,7 +415,7 @@ static void MX_TIM2_Init(void)
   * @param None
   * @retval None
   */
-static void MX_USB_PCD_Init(void)
+void MX_USB_PCD_Init(void)
 {
 
   /* USER CODE BEGIN USB_Init 0 */

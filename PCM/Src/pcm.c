@@ -8,6 +8,7 @@
 
 #include "main.h"
 #include "pcm_status_led.h"
+#include "pcm_usb.h"
 #include "stm32h5xx_hal_gpio.h"
 
 #define PCM_STATUS_LED_STACK_SIZE 512
@@ -30,5 +31,12 @@ UINT pcm_threads_create(TX_BYTE_POOL *byte_pool) {
     if (status != TX_SUCCESS) {
         return TX_THREAD_ERROR;
     }
+
+    pcm_usb_init();
+    if (pcm_usb_create(byte_pool) != TX_SUCCESS)
+    {
+        return TX_THREAD_ERROR;
+    }
+
     return status;
 }

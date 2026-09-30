@@ -23,7 +23,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "pcm_usb.h"
+#include "main.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -43,7 +44,12 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+UX_SLAVE_CLASS_CDC_ACM_LINE_CODING_PARAMETER CDC_VCP_LineCoding = {
+  115200,
+  0x00,
+  0x00,
+  0x08,
+};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -65,7 +71,12 @@
 VOID USBD_CDC_ACM_Activate(VOID *cdc_acm_instance)
 {
   /* USER CODE BEGIN USBD_CDC_ACM_Activate */
-  UX_PARAMETER_NOT_USED(cdc_acm_instance);
+  pcm_usb_activate((UX_SLAVE_CLASS_CDC_ACM *)cdc_acm_instance);
+  if (ux_device_class_cdc_acm_ioctl(cdc_acm_instance, UX_SLAVE_CLASS_CDC_ACM_IOCTL_SET_LINE_CODING, &CDC_VCP_LineCoding) !=
+        UX_SUCCESS)
+  {
+    Error_Handler();
+  }
   /* USER CODE END USBD_CDC_ACM_Activate */
 
   return;
@@ -81,6 +92,7 @@ VOID USBD_CDC_ACM_Deactivate(VOID *cdc_acm_instance)
 {
   /* USER CODE BEGIN USBD_CDC_ACM_Deactivate */
   UX_PARAMETER_NOT_USED(cdc_acm_instance);
+  pcm_usb_deactivate();
   /* USER CODE END USBD_CDC_ACM_Deactivate */
 
   return;
@@ -96,6 +108,36 @@ VOID USBD_CDC_ACM_ParameterChange(VOID *cdc_acm_instance)
 {
   /* USER CODE BEGIN USBD_CDC_ACM_ParameterChange */
   UX_PARAMETER_NOT_USED(cdc_acm_instance);
+  ULONG request;
+  UX_SLAVE_TRANSFER* transfer_request;
+  UX_SLAVE_DEVICE* device;
+
+  device = &_ux_system_slave->ux_system_slave_device;
+  transfer_request = &device->ux_slave_device_control_endpoint.ux_slave_endpoint_transfer_request;
+  request = *(transfer_request->ux_slave_transfer_request_setup + UX_SETUP_REQUEST);
+
+  switch (request)
+  {
+    case UX_SLAVE_CLASS_CDC_ACM_SET_LINE_CODING:
+      if (ux_device_class_cdc_acm_ioctl(pcm_usb_cdc(), UX_SLAVE_CLASS_CDC_ACM_IOCTL_GET_LINE_CODING, &CDC_VCP_LineCoding) !=
+          UX_SUCCESS)
+      {
+        Error_Handler();
+      }
+      break;
+
+    case UX_SLAVE_CLASS_CDC_ACM_GET_LINE_CODING:
+      if (ux_device_class_cdc_acm_ioctl(pcm_usb_cdc(), UX_SLAVE_CLASS_CDC_ACM_IOCTL_SET_LINE_CODING, &CDC_VCP_LineCoding) !=
+          UX_SUCCESS)
+      {
+        Error_Handler();
+      }
+      break;
+
+    case UX_SLAVE_CLASS_CDC_ACM_SET_CONTROL_LINE_STATE:
+    default:
+      break;
+  }
   /* USER CODE END USBD_CDC_ACM_ParameterChange */
 
   return;

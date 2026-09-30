@@ -22,7 +22,7 @@
 #include "app_usbx_device.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "main.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -181,6 +181,8 @@ UINT MX_USBX_Device_Stack_Init(void)
     /* USER CODE END USBX_DEVICE_CDC_ACM_REGISTER_ERROR */
   }
 
+  /* Initialize and link controller HAL driver */
+  ux_dcd_stm32_initialize((ULONG)USB_DRD_FS, (ULONG)&hpcd_USB_DRD_FS);
   /* USER CODE BEGIN MX_USBX_Device_Stack_Init_PostTreatment */
   /* USER CODE END MX_USBX_Device_Stack_Init_PostTreatment */
 
@@ -199,7 +201,24 @@ UINT MX_USBX_Device_Stack_Init(void)
 static VOID app_ux_device_thread_entry(ULONG thread_input)
 {
   /* USER CODE BEGIN app_ux_device_thread_entry */
-  TX_PARAMETER_NOT_USED(thread_input);
+  HAL_PWREx_EnableVddUSB();
+  MX_USB_PCD_Init();
+
+  HAL_PCDEx_PMAConfig(&hpcd_USB_DRD_FS, 0x00, PCD_SNG_BUF, 0x40);
+  HAL_PCDEx_PMAConfig(&hpcd_USB_DRD_FS, 0x80, PCD_SNG_BUF, 0x80);
+  HAL_PCDEx_PMAConfig(&hpcd_USB_DRD_FS, USBD_CDCACM_EPOUT_ADDR, PCD_SNG_BUF, 0xC0);
+  HAL_PCDEx_PMAConfig(&hpcd_USB_DRD_FS, USBD_CDCACM_EPIN_ADDR, PCD_SNG_BUF, 0x100);
+  HAL_PCDEx_PMAConfig(&hpcd_USB_DRD_FS, USBD_CDCACM_EPINCMD_ADDR, PCD_SNG_BUF, 0x140);
+
+  if (MX_USBX_Device_Stack_Init() != UX_SUCCESS) {
+    Error_Handler();
+  }
+
+  HAL_PCD_Start(&hpcd_USB_DRD_FS);
+
+  while (1) {
+    tx_thread_sleep(100);
+  }
   /* USER CODE END app_ux_device_thread_entry */
 }
 
@@ -218,6 +237,10 @@ UINT MX_USBX_Device_Stack_DeInit(void)
   /* USER CODE END MX_USBX_Device_Stack_DeInit_PreTreatment_0 */
 
   /* Unregister USB device controller. */
+  if (ux_dcd_stm32_uninitialize((ULONG)USB_DRD_FS, (ULONG)&hpcd_USB_DRD_FS) != UX_SUCCESS)
+  {
+    return UX_ERROR;
+  }
 
   /* Unregister CDC ACM class. */
   if (ux_device_stack_class_unregister(_ux_system_slave_class_cdc_acm_name,
