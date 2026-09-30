@@ -8,9 +8,12 @@
 #include "pcm_usb_cli.h"
 #include "pcm_usb_console.h"
 #include "main.h"
+#include "analog.h"
+
 static UINT cmd_ping(UINT argc, char* argv[]);
 static UINT cmd_system_reboot(UINT argc, char* argv[]);
 static UINT cmd_clear(UINT argc, char* argv[]);
+static UINT cmd_analog_read(UINT argc, char *argv[]);
 
 static const PCM_USB_CLI_COMMAND system_commands[] = {
     {
@@ -18,6 +21,15 @@ static const PCM_USB_CLI_COMMAND system_commands[] = {
         .description = "Reboot the controller",
         .usage = "system reboot",
         .handler = cmd_system_reboot,
+    },
+};
+
+static const PCM_USB_CLI_COMMAND analog_commands[] = {
+    {
+        .name = "read",
+        .description = "Read all analog inputs",
+        .usage = "analog read",
+        .handler = cmd_analog_read,
     },
 };
 
@@ -47,6 +59,13 @@ static const PCM_USB_CLI_COMMAND root_commands[] = {
         .children = system_commands,
         .child_count = ARRAY_COUNT(system_commands),
     },
+{
+    .name = "analog",
+    .description = "Analog input commands",
+    .usage = "analog <command>",
+    .children = analog_commands,
+    .child_count = ARRAY_COUNT(analog_commands),
+},
 };
 
 const PCM_USB_CLI_COMMAND* pcm_usb_cli_commands_get_root(void) { return root_commands; }
@@ -78,6 +97,28 @@ static UINT cmd_clear(UINT argc, char* argv[])
     (void)argv;
 
     pcm_usb_console_clear();
+
+    return TX_SUCCESS;
+}
+
+static UINT cmd_analog_read(UINT argc, char *argv[])
+{
+    (void)argc;
+    (void)argv;
+
+    pcm_analog_values_t values;
+    pcm_analog_get_all(&values);
+
+    pcm_usb_console_begin_write();
+
+    pcm_usb_console_write_string("Analog Inputs:\r\n");
+    pcm_usb_console_printf("  APPS_H:       %u\r\n", values.apps_h);
+    pcm_usb_console_printf("  APPS_L:       %u\r\n", values.apps_l);
+    pcm_usb_console_printf("  FRONT_BRAKE:  %u\r\n", values.front_brake);
+    pcm_usb_console_printf("  REAR_BRAKE:   %u\r\n", values.rear_brake);
+    pcm_usb_console_printf("  STEERING:     %u\r\n", values.steering);
+
+    pcm_usb_console_end_write();
 
     return TX_SUCCESS;
 }

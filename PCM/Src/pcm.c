@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "analog.h"
 #include "main.h"
 #include "pcm_status_led.h"
 #include "pcm_usb.h"
@@ -34,6 +35,12 @@ UINT pcm_threads_create(TX_BYTE_POOL *byte_pool) {
 
     pcm_usb_init();
     if (pcm_usb_create(byte_pool) != TX_SUCCESS)
+    {
+        return TX_THREAD_ERROR;
+    }
+
+    pcm_analog_init();
+    if (pcm_analog_create(byte_pool) != TX_SUCCESS)
     {
         return TX_THREAD_ERROR;
     }
