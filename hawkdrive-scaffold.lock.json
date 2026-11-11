@@ -1,0 +1,11 @@
+{
+  "files": {
+    ".clang-format": "28580b08b4c1a99bb3f2cb963b17cb7fa60168a37f9c67d6d8044e26d33a329b",
+    ".clang-tidy": "08ccd01650aa8b45cd20fada69dd0e7f9993e2c4d9b9448818b8ca9e46c21e89",
+    ".gitattributes": "f70d755466b101646b043fe3c62c4f8a39eae827c1a2a303a2d39ccd93f534f8",
+    ".github/PULL_REQUEST_TEMPLATE.md": "34cc607aa756b576c30ff55bd431259ddb6d4eb48b601ed6b2efc9164c4c1ba1",
+    ".github/workflows/cpp-linter.yml": "f6ad63fed773fa20f928fe03a8a7854c4a83cece35fb721171e8259785c438bc",
+    ".pre-commit-config.yaml": "c7589d4db89f7c6c4117759c3949efd5fd299129c81951a8021a5949a0e6101c"
+  },
+  "tag_name": "0.2.6"
+}

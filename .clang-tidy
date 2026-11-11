@@ -7,4 +7,4 @@ Checks: >
 
 WarningsAsErrors: 'bugprone-*'
 
-HeaderFilterRegex: 'PCM/Inc/.*'
+HeaderFilterRegex: 'PDM/Inc/.*'
