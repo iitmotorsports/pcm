@@ -60,7 +60,7 @@ extern PCD_HandleTypeDef hpcd_USB_DRD_FS;
 extern TIM_HandleTypeDef htim7;
 
 /* USER CODE BEGIN EV */
-
+extern FDCAN_HandleTypeDef hfdcan1;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -204,5 +204,8 @@ void USB_DRD_FS_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-
+void FDCAN1_IT0_IRQHandler(void)
+{
+    HAL_FDCAN_IRQHandler(&hfdcan1);
+}
 /* USER CODE END 1 */
